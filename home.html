@@ -1,0 +1,544 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCube Apparel</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            font-size: 2.5em;
+            color: #ff5722;
+        }
+        .product {
+            border: 1px solid #333;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #1e1e1e;
+            display: flex;
+            align-items: center;
+            border-radius: 20px;
+        }
+        .product img {
+            width: 30%;
+            margin-right: 15px;
+        }
+        .product-details {
+            font-size: 130%;
+        }
+        .product h2 {
+            color: #ff5722;
+        }
+        .product p {
+            font-size: 1em;
+            color: #b0b0b0;
+        }
+        .product .price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #76ff03;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            font-size: 150%;
+        }
+        .quantity-controls button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            background-color: #ff5722;
+            color: #121212;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .quantity-controls button:hover {
+            background-color: #ff3d00;
+        }
+        .quantity-controls input {
+            width: 50px;
+            text-align: center;
+            border: none;
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #d;
+            margin-top: 20px;
+            color: #757575;
+        }
+        .checkout-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            color: #121212;
+            background-color: #ff5722;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .checkout-button:hover {
+            background-color: #ff3d00;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #333;
+            color: #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .popup button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #ff5722;
+            color: #121212;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .popup button:hover {
+            background-color: #ff3d00;
+        }
+    </style>
+    <script>
+        function updateQuantity(index, change) {
+            const quantityInput = document.getElementById(`quantity${index}`);
+            let quantity = parseInt(quantityInput.value) + change;
+            if (quantity < 0) quantity = 0;
+            quantityInput.value = quantity;
+            updateCart(index, quantity);
+        }
+
+        function updateCart(index, quantity) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const size = document.getElementById(`size${index}`).value;
+            let product = cart.find(item => item.index === index);
+            if (product) {
+                product.quantity = quantity;
+                product.size = size;
+            } else {
+                product = {
+                    index,
+                    productName: document.getElementById(`productName${index}`).innerText,
+                    price: parseFloat(document.getElementById(`price${index}`).innerText.replace('₱', '')),
+                    size,
+                    quantity
+                };
+                cart.push(product);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function checkCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const hasQuantity = cart.some(item => item.quantity > 0);
+            if (!hasQuantity) {
+                alert("Please select at least one product with a quantity greater than zero before proceeding to checkout.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JCube Apparel</h1>
+        </header>
+
+        <div class="product">
+            <img src="files/1.png" alt="Product 1 Image">
+            <div class="product-details">
+                <h2 id="productName1">Tie-Dye T-Shirt</h2>
+                <p>A vibrant and colorful t-shirt featuring a spiral tie-dye pattern in various shades of red, yellow, green, blue, and purple.</p>
+                <p class="price" id="price1">₱250</p>
+                <div class="options">
+                    <label for="size1">Size:</label>
+                    <select id="size1" name="size1" onchange="updateCart(1, parseInt(document.getElementById('quantity1').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(1, -1)">-</button>
+                    <input type="number" id="quantity1" name="quantity1" value="0" readonly>
+                    <button onclick="updateQuantity(1, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/2.png" alt="Product 2 Image">
+            <div class="product-details">
+                <h2 id="productName2">Denim Button-Up Shirt</h2>
+                <p>A classic denim button-up shirt with a collared neckline and front pockets, perfect for a casual yet stylish look.</p>
+                <p class="price" id="price2">₱200</p>
+                <div class="options">
+                    <label for="size2">Size:</label>
+                    <select id="size2" name="size2" onchange="updateCart(2, parseInt(document.getElementById('quantity2').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(2, -1)">-</button>
+                    <input type="number" id="quantity2" name="quantity2" value="0" readonly>
+                    <button onclick="updateQuantity(2, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/3.png" alt="Product 3 Image">
+            <div class="product-details">
+                <h2 id="productName3">Dinosaur Graphic Tee</h2>
+                <p>An yellow t-shirt with a playful and bold green dinosaur graphic printed on the front, ideal for kids or dinosaur enthusiasts.</p>
+                <p class="price" id="price3">₱180</p>
+                <div class="options">
+                    <label for="size3">Size:</label>
+                    <select id="size3" name="size3" onchange="updateCart(3, parseInt(document.getElementById('quantity3').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(3, -1)">-</button>
+                    <input type="number" id="quantity3" name="quantity3" value="0" readonly>
+                    <button onclick="updateQuantity(3, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/4.png" alt="Product 4 Image">
+            <div class="product-details">
+                <h2 id="productName4">Hawaiian Floral Shirt</h2>
+                <p>A bright green Hawaiian-style shirt adorned with eye-catching pink and blue hibiscus flower patterns, perfect for a tropical vacation or a summer day.</p>
+                <p class="price" id="price4">₱300</p>
+                <div class="options">
+                    <label for="size4">Size:</label>
+                    <select id="size4" name="size4" onchange="updateCart(4, parseInt(document.getElementById('quantity4').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(4, -1)">-</button>
+                    <input type="number" id="quantity4" name="quantity4" value="0" readonly>
+                    <button onclick="updateQuantity(4, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/5.png" alt="Product 5 Image">
+            <div class="product-details">
+                <h2 id="productName5">Smiley Face T-Shirt</h2>
+                <p>A cheerful yellow t-shirt featuring a simple yet iconic orange smiley face graphic, sure to bring a smile to anyone's face.</p>
+                <p class="price" id="price5">₱220</p>
+                <div class="options">
+                    <label for="size5">Size:</label>
+                    <select id="size5" name="size5" onchange="updateCart(5, parseInt(document.getElementById('quantity5').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(5, -1)">-</button>
+                    <input type="number" id="quantity5" name="quantity5" value="0" readonly>
+                    <button onclick="updateQuantity(5, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/6.png" alt="Product 6 Image">
+            <div class="product-details">
+                <h2 id="productName6">Tartan Plaid Shirt</h2>
+                <p>A vibrant red and brown plaid button-up shirt with a classic tartan pattern, featuring a collared neckline and front pockets for a stylish yet casual look.</p>
+                <p class="price" id="price6">₱320</p>
+                <div class="options">
+                    <label for="size6">Size:</label>
+                    <select id="size6" name="size6" onchange="updateCart(6, parseInt(document.getElementById('quantity6').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(6, -1)">-</button>
+                    <input type="number" id="quantity6" name="quantity6" value="0" readonly>
+                    <button onclick="updateQuantity(6, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/7.png" alt="Product 7 Image">
+            <div class="product-details">
+                <h2 id="productName7">Blue Feather Print Tee</h2>
+                <p>A light blue t-shirt adorned with a subtle feather graphic print, offering a cool and laidback vibe perfect for everyday wear.</p>
+                <p class="price" id="price7">₱180</p>
+                <div class="options">
+                    <label for="size7">Size:</label>
+                    <select id="size7" name="size7" onchange="updateCart(7, parseInt(document.getElementById('quantity7').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(7, -1)">-</button>
+                    <input type="number" id="quantity7" name="quantity7" value="0" readonly>
+                    <button onclick="updateQuantity(7, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/8.png" alt="Product 8 Image">
+            <div class="product-details">
+                <h2 id="productName8">Navy Blue Hawaiian Floral Shirt</h2>
+                <p>A navy blue button-up shirt covered in a delightful all-over print of blue hibiscus flowers, capturing the essence of tropical style.</p>
+                <p class="price" id="price8">₱300</p>
+                <div class="options">
+                    <label for="size8">Size:</label>
+                    <select id="size8" name="size8" onchange="updateCart(8, parseInt(document.getElementById('quantity8').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(8, -1)">-</button>
+                    <input type="number" id="quantity8" name="quantity8" value="0" readonly>
+                    <button onclick="updateQuantity(8, 1)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="product">
+            <img src="files/9.png" alt="Product 9 Image">
+            <div class="product-details">
+                <h2 id="productName9">Beach Scene Shirt</h2>
+                <p>A vibrant yellow shirt showcasing a fun beach scene with a green palm tree, blue ocean waves, and an orange sun, perfect for embracing summer vibes.</p>
+                <p class="price" id="price9">₱280</p>
+                <div class="options">
+                    <label for="size9">Size:</label>
+                    <select id="size9" name="size9" onchange="updateCart(9, parseInt(document.getElementById('quantity9').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(9, -1)">-</button>
+                    <input type="number" id="quantity9" name="quantity9" value="0" readonly>
+                    <button onclick="updateQuantity(9, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/10.png" alt="Product 10 Image">
+            <div class="product-details">
+                <h2 id="productName10">Solid Collared Shirt</h2>
+                <p>A classic black collared shirt with red contrasting trim on the collar and sleeves, providing a sleek and stylish look suitable for various occasions.</p>
+                <p class="price" id="price10">₱200</p>
+                <div class="options">
+                    <label for="size10">Size:</label>
+                    <select id="size10" name="size10" onchange="updateCart(10, parseInt(document.getElementById('quantity10').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(10, -1)">-</button>
+                    <input type="number" id="quantity10" name="quantity10" value="0" readonly>
+                    <button onclick="updateQuantity(10, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/11.png" alt="Product 11 Image">
+            <div class="product-details">
+                <h2 id="productName11">Beige Sweatpants</h2>
+                <p>Comfortable and relaxed beige sweatpants with an elastic waistband and drawstring closure, perfect for lounging or casual activities.</p>
+                <p class="price" id="price11">₱350</p>
+                <div class="options">
+                    <label for="size11">Size:</label>
+                    <select id="size11" name="size11" onchange="updateCart(11, parseInt(document.getElementById('quantity11').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(11, -1)">-</button>
+                    <input type="number" id="quantity11" name="quantity11" value="0" readonly>
+                    <button onclick="updateQuantity(11, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/12.png" alt="Product 12 Image">
+            <div class="product-details">
+                <h2 id="productName12">Blue Striped Sweatpants</h2>
+                <p>Bright blue sweatpants featuring contrasting darker blue stripes along the sides, adding a stylish touch to this casual and comfortable item.</p>
+                <p class="price" id="price12">₱320</p>
+                <div class="options">
+                    <label for="size12">Size:</label>
+                    <select id="size12" name="size12" onchange="updateCart(12, parseInt(document.getElementById('quantity12').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(12, -1)">-</button>
+                    <input type="number" id="quantity12" name="quantity12" value="0" readonly>
+                    <button onclick="updateQuantity(12, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/13.png" alt="Product 13 Image">
+            <div class="product-details">
+                <h2 id="productName13">Khaki Chino Pants</h2>
+                <p>Classic khaki chino pants with a straight-leg fit and a belted waistline, providing a polished and versatile look suitable for various occasions.</p>
+                <p class="price" id="price13">₱250</p>
+                <div class="options">
+                    <label for="size13">Size:</label>
+                    <select id="size13" name="size13" onchange="updateCart(13, parseInt(document.getElementById('quantity13').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(13, -1)">-</button>
+                    <input type="number" id="quantity13" name="quantity13" value="0" readonly>
+                    <button onclick="updateQuantity(13, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/14.png" alt="Product 14 Image">
+            <div class="product-details">
+                <h2 id="productName14">Teal Athletic Pants</h2>
+                <p>Functional teal athletic pants with white side stripes, an elasticated waistband, and cuffed ankles, ideal for workouts or casual athleisure wear.</p>
+                <p class="price" id="price14">₱350</p>
+                <div class="options">
+                    <label for="size14">Size:</label>
+                    <select id="size14" name="size14" onchange="updateCart(14, parseInt(document.getElementById('quantity14').value))">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+                <div class="quantity-controls">
+                    <h3></h3>
+                    <button onclick="updateQuantity(14, -1)">-</button>
+                    <input type="number" id="quantity14" name="quantity14" value="0" readonly>
+                    <button onclick="updateQuantity(14, 1)">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product">
+            <img src="files/15.png" alt="Product 15 Image">
+            <div class="product-details">
+              <h2 id="productName15">Forest Green Sweatpants</h2>
+              <p>Cozy forest green sweatpants with a drawstring waist and contrasting white side stripes, perfect for lounging, exercise, or running errands in comfort and style.</p>
+              <p class="price" id="price15">₱300</p>
+              <div class="options">
+                <label for="size15">Size:</label>
+                <select id="size15" name="size15" onchange="updateCart(15, parseInt(document.getElementById('quantity15').value))">
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                  <option value="xlarge">X-Large</option>
+                </select>
+              </div>
+              <div class="quantity-controls">
+                <h3></h3>
+                <button onclick="updateQuantity(15, -1)">-</button>
+                <input type="number" id="quantity15" name="quantity15" value="0" readonly>
+                <button onclick="updateQuantity(15, 1)">+</button>
+              </div>
+            </div>
+          </div>
+
+
+          <a href="checkout.html" class="checkout-button" onclick="return checkCart()">Checkout</a>
+          <div id="popup" class="popup">
+              <p>Please select at least one product with a quantity greater than zero before proceeding to checkout.</p>
+              <button onclick="closePopup()">Close</button>
+          </div>
+          
+          <footer>
+              <p>&copy; 2023 JCube Apparel. All rights reserved.</p>
+          </footer>
+      </div>
+  </body>
+  </html>

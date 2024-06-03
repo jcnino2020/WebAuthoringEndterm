@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCube Apparel - Checkout</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            font-size: 2.5em;
+            color: #ff5722;
+        }
+        .checkout-item {
+            border: 1px solid #333;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #1e1e1e;
+            border-radius: 20px;
+        }
+        .checkout-item h2 {
+            color: #ff5722;
+        }
+        .checkout-item p {
+            font-size: 1em;
+            color: #b0b0b0;
+        }
+        .checkout-item .price {
+            font-size: 1.2em;
+            color: #76ff03;
+        }
+        #total {
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #333;
+            margin-top: 20px;
+            color: #757575;
+        }
+        .finalize-order {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 10px;
+            color: #121212;
+            background-color: #ff5722;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .finalize-order:hover {
+            background-color: #ff3d00;
+        }
+    </style>
+    <script>
+    function loadCheckout() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let subtotal = 0;
+        const shipping = 50;
+        const discount = 0.10;
+        const checkoutContainer = document.getElementById('checkout-container');
+        let checkoutHTML = '';
+
+        cart.forEach((item) => {
+            if (item.quantity > 0) {
+                subtotal += item.price * item.quantity;
+                checkoutHTML += `
+                    <div class="checkout-item">
+                        <h2>${item.productName}</h2>
+                        <p>Size: ${item.size.toUpperCase()}</p>
+                        <p>Quantity: ${item.quantity}</p>
+                        <p class="price">Price: ₱${(item.price * item.quantity).toFixed(2)}</p>
+                    </div>
+                `;
+            }
+        });
+
+        checkoutContainer.innerHTML = checkoutHTML;
+
+        const discountAmount = subtotal * discount;
+        const total = subtotal + shipping - discountAmount;
+        document.getElementById('subtotal').innerText = `Subtotal: ₱${subtotal.toFixed(2)}`;
+        document.getElementById('shipping').innerText = `Shipping: ₱${shipping.toFixed(2)}`;
+        document.getElementById('discount').innerText = `Discount: -₱${discountAmount.toFixed(2)}`;
+        document.getElementById('total').innerText = `Total: ₱${total.toFixed(2)}`;
+    }
+
+
+        function finalizeOrder() {
+            alert("Your order has been placed successfully!");
+            localStorage.removeItem('cart');
+            window.location.href = 'thankyou.html';
+        }
+    </script>
+</head>
+<body onload="loadCheckout()">
+    <div class="container">
+        <header>
+            <h1>Checkout</h1>
+        </header>
+        <div id="checkout-container">
+        </div>
+        <div id="subtotal" style="font-size: 1.2em; color: #76ff03;"></div>
+        <div id="shipping" style="font-size: 1.2em; color: #76ff03;"></div>
+        <div id="discount" style="font-size: 1.2em; color: #76ff03;"></div>
+        <div id="total" style="font-size: 1.5em; color: #76ff03; margin-top: 20px;"></div>
+        <a href="#" class="finalize-order" onclick="finalizeOrder()">Place Order</a>
+        <footer>
+            <p>&copy; 2024 JCube Apparel. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
