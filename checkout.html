@@ -66,37 +66,41 @@
         }
     </style>
     <script>
+
     function loadCheckout() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let subtotal = 0;
-        const shipping = 50;
-        const discount = 0.10;
-        const checkoutContainer = document.getElementById('checkout-container');
-        let checkoutHTML = '';
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let subtotal = 0;
+    const shipping = 50;
+    let discount = 0;
+    const checkoutContainer = document.getElementById('checkout-container');
+    let checkoutHTML = '';
 
-        cart.forEach((item) => {
-            if (item.quantity > 0) {
-                subtotal += item.price * item.quantity;
-                checkoutHTML += `
-                    <div class="checkout-item">
-                        <h2>${item.productName}</h2>
-                        <p>Size: ${item.size.toUpperCase()}</p>
-                        <p>Quantity: ${item.quantity}</p>
-                        <p class="price">Price: ₱${(item.price * item.quantity).toFixed(2)}</p>
-                    </div>
-                `;
-            }
-        });
+    cart.forEach((item) => {
+        if (item.quantity > 0) {
+            subtotal += item.price * item.quantity;
+            checkoutHTML += `
+                <div class="checkout-item">
+                    <h2>${item.productName}</h2>
+                    <p>Size: ${item.size.toUpperCase()}</p>
+                    <p>Quantity: ${item.quantity}</p>
+                    <p class="price">Price: ₱${(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+            `;
+        }
+    });
 
-        checkoutContainer.innerHTML = checkoutHTML;
+    checkoutContainer.innerHTML = checkoutHTML;
 
-        const discountAmount = subtotal * discount;
-        const total = subtotal + shipping - discountAmount;
-        document.getElementById('subtotal').innerText = `Subtotal: ₱${subtotal.toFixed(2)}`;
-        document.getElementById('shipping').innerText = `Shipping: ₱${shipping.toFixed(2)}`;
-        document.getElementById('discount').innerText = `Discount: -₱${discountAmount.toFixed(2)}`;
-        document.getElementById('total').innerText = `Total: ₱${total.toFixed(2)}`;
+    if (subtotal >= 500) {
+        discount = subtotal * 0.05;
     }
+
+    const total = subtotal + shipping - discount;
+    document.getElementById('subtotal').innerText = `Subtotal: ₱${subtotal.toFixed(2)}`;
+    document.getElementById('shipping').innerText = `Shipping: ₱${shipping.toFixed(2)}`;
+    document.getElementById('discount').innerText = `Discount: -₱${discount.toFixed(2)}`;
+    document.getElementById('total').innerText = `Total: ₱${total.toFixed(2)}`;
+}
 
 
         function finalizeOrder() {
@@ -105,6 +109,7 @@
             window.location.href = 'thankyou.html';
         }
     </script>
+    
 </head>
 <body onload="loadCheckout()">
     <div class="container">
